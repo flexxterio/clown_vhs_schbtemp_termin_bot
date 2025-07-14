@@ -1,13 +1,13 @@
 import requests
 from bs4 import BeautifulSoup
-import time
+import asyncio
 from telegram import Bot
 import os
-import threading
 from keep_alive import keep_alive
 
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
+
 bot = Bot(token=TELEGRAM_TOKEN)
 
 URLS = {
@@ -21,26 +21,25 @@ def check_slots():
     for name, url in URLS.items():
         r = requests.get(url)
         soup = BeautifulSoup(r.text, 'html.parser')
-        no_appts = soup.find("p", string=lambda s: s and "No appointments avaialable" in s)
-        if not no_appts:
+        text = soup.text.lower()
+        if "keine freien termine" not in text and "no appointments avaialable" not in text:
             found.append(f"{name}: possibly free slot!\n{url}")
     return found
 
-def run_checker():
+async def main():
     seen = set()
     while True:
         try:
             results = check_slots()
             for msg in results:
                 if msg not in seen:
-                    bot.send_message(chat_id=CHAT_ID, text=msg)
+                    await bot.send_message(chat_id=CHAT_ID, text=msg)
                     seen.add(msg)
-            time.sleep(300)
+            await asyncio.sleep(300)
         except Exception as e:
-            bot.send_message(chat_id=CHAT_ID, text=f"[Error] {e}")
-            time.sleep(300)
+            await bot.send_message(chat_id=CHAT_ID, text=f"[Error] {e}")
+            await asyncio.sleep(300)
 
 if __name__ == "__main__":
-    keep_alive()  # Start Flask server
-    thread = threading.Thread(target=run_checker)
-    thread.start()
+    keep_alive()
+    asyncio.run(main())
