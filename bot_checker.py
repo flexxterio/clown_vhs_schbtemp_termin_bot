@@ -23,7 +23,7 @@ def check_slots():
         r = requests.get(url)
         soup = BeautifulSoup(r.text, 'html.parser')
         text = soup.text.lower()
-        if "keine freien termine" not in text and "no appointments avaialable" not in text:
+        if "keine freien termine" not in text and "ffff no appointments avaialable" not in text:
             found.append(f"{name}: possibly free slot!\n{url}")
     return found
 
