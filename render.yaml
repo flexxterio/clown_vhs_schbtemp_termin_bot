@@ -1,5 +1,5 @@
 services:
-  - type: worker
+  - type: web
     name: vhs-termin-bot
     env: python
     plan: free
@@ -10,3 +10,4 @@ services:
         sync: false
       - key: CHAT_ID
         sync: false
+
