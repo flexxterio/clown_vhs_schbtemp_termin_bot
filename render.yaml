@@ -6,12 +6,12 @@ services:
     region: frankfurt
     buildCommand: pip install -r requirements.txt
     startCommand: python bot_checker.py
+    runtime: python-3.12
     envVars:
       - key: TELEGRAM_TOKEN
         sync: false
       - key: CHAT_ID
         sync: false
-    runtime: python-3.12
 
 
 
