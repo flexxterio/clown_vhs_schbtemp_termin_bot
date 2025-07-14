@@ -1,13 +1,15 @@
 services:
   - type: web
-    name: vhs-termin-bot
+    name: clown_vhs_schbtemp_termin_bot
     env: python
     plan: free
-    buildCommand: pip install -r requirements.txt
-    startCommand: python bot_checker.py
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python bot_checker.py"
+    pythonVersion: 3.12
     envVars:
       - key: TELEGRAM_TOKEN
         sync: false
       - key: CHAT_ID
         sync: false
+
 
