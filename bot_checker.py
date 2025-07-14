@@ -1,8 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
 import asyncio
-from telegram import Bot
 import os
+from telegram import Bot
+from telegram.constants import ParseMode
 from keep_alive import keep_alive
 
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
@@ -33,7 +34,7 @@ async def main():
             results = check_slots()
             for msg in results:
                 if msg not in seen:
-                    await bot.send_message(chat_id=CHAT_ID, text=msg)
+                    await bot.send_message(chat_id=CHAT_ID, text=msg, parse_mode=ParseMode.HTML)
                     seen.add(msg)
             await asyncio.sleep(300)
         except Exception as e:
@@ -43,3 +44,4 @@ async def main():
 if __name__ == "__main__":
     keep_alive()
     asyncio.run(main())
+
