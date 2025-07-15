@@ -42,7 +42,7 @@ async def main():
                 if msg not in seen:
                     await bot.send_message(chat_id=CHAT_ID, text=msg, parse_mode=ParseMode.HTML)
                     seen.add(msg)
-            await asyncio.sleep(300)
+            await asyncio.sleep(15)
         except Exception as e:
             await bot.send_message(chat_id=CHAT_ID, text=f"[Error] {e}")
             await asyncio.sleep(300)
