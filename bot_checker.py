@@ -27,8 +27,17 @@ def check_slots():
         response = requests.get(url, headers=HEADERS)
         soup = BeautifulSoup(response.text, 'html.parser')
         page_text = soup.get_text().lower()
+        
+        print(f"\n--- {label} ---")
+        print(page_text[:500])  # Preview the first 500 characters
+
         if "no appointments avaialable" not in page_text:
-            available.append(f"<b>{label}</b>: Possible free slot!\n{url}")
+            message = f"<b>{label}</b>: Possible free slot!\n{url}"
+            print(f"✔ Slot found: {message}")
+            available.append(message)
+        else:
+            print("✘ No appointments")
+
     return available
 
 async def main():
@@ -42,7 +51,9 @@ async def main():
                     seen.add(message)
             await asyncio.sleep(300)
         except Exception as e:
-            await bot.send_message(chat_id=CHAT_ID, text=f"[Error] {e}")
+            error_text = f"[Error] {e}"
+            print(error_text)
+            await bot.send_message(chat_id=CHAT_ID, text=error_text)
             await asyncio.sleep(300)
 
 if __name__ == "__main__":
