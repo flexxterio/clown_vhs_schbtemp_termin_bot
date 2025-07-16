@@ -21,24 +21,20 @@ HEADERS = {
     "Accept-Language": "ru-RU,ru;q=0.9"
 }
 
+
+TEST_PHRASE = "this phrase should definitely not exist"
+
 def check_slots():
-    available = []
+    found = []
     for label, url in URLS.items():
         response = requests.get(url, headers=HEADERS)
         soup = BeautifulSoup(response.text, 'html.parser')
         page_text = soup.get_text().lower()
-        
-        print(f"\n--- {label} ---")
-        print(page_text[:500])  # Preview the first 500 characters
 
-        if "no appointments avaialable" not in page_text:
-            message = f"<b>{label}</b>: Possible free slot!\n{url}"
-            print(f"✔ Slot found: {message}")
-            available.append(message)
-        else:
-            print("✘ No appointments")
-
-    return available
+       
+        if TEST_PHRASE not in page_text:
+            found.append(f"<b>{label}</b>: TEST alert — this should be sent!\n{url}")
+    return found
 
 async def main():
     seen = set()
@@ -49,14 +45,11 @@ async def main():
                 if message not in seen:
                     await bot.send_message(chat_id=CHAT_ID, text=message, parse_mode=ParseMode.HTML)
                     seen.add(message)
-            await asyncio.sleep(15)
+            await asyncio.sleep(300)
         except Exception as e:
-            error_text = f"[Error] {e}"
-            print(error_text)
-            await bot.send_message(chat_id=CHAT_ID, text=error_text)
+            await bot.send_message(chat_id=CHAT_ID, text=f"[Error] {e}")
             await asyncio.sleep(300)
 
 if __name__ == "__main__":
     keep_alive()
     asyncio.run(main())
-
