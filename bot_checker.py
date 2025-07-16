@@ -21,20 +21,17 @@ HEADERS = {
     "Accept-Language": "ru-RU,ru;q=0.9"
 }
 
-
-TEST_PHRASE = "this phrase should definitely not exist"
+NO_APPOINTMENTS_TEXT = "no appointments avaialable"
 
 def check_slots():
-    found = []
+    available = []
     for label, url in URLS.items():
         response = requests.get(url, headers=HEADERS)
         soup = BeautifulSoup(response.text, 'html.parser')
         page_text = soup.get_text().lower()
-
-       
-        if TEST_PHRASE not in page_text:
-            found.append(f"<b>{label}</b>: TEST alert — this should be sent!\n{url}")
-    return found
+        if NO_APPOINTMENTS_TEXT not in page_text:
+            available.append(f"<b>{label}</b>: Возможно, есть свободные слоты!\n{url}")
+    return available
 
 async def main():
     seen = set()
