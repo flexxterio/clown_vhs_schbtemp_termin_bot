@@ -10,13 +10,14 @@ from keep_alive import keep_alive
 # Setup logging
 logging.basicConfig(level=logging.INFO)
 
-# Environment variables
+# Get environment variables for Telegram credentials
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
+# Initialize Telegram bot
 bot = Bot(token=TELEGRAM_TOKEN)
 
-# URLs to check
+# URLs to check for appointments
 URLS = {
     "Current month": "https://vhs-tempelhof-schoeneberg.appointmind.net/?&select_month=0",
     "Next month": "https://vhs-tempelhof-schoeneberg.appointmind.net/?&select_month=1",
@@ -28,10 +29,15 @@ HEADERS = {
     "Accept-Language": "ru-RU,ru;q=0.9"
 }
 
-# Text indicating no appointments
-NO_APPOINTMENTS_TEXT = "Пожалуйста, выберите дату, чтобы увидеть доступное время."  # preserve typo
+# Phrases indicating no appointments (in both Russian and English)
+NO_APPOINTMENTS_TEXTS = [
+    "пожалуйста, выберите дату, чтобы увидеть доступное время.",
+    "please select a date to see available appointments."
+]
 
 def check_slots():
+    """Checks each URL for available appointments.
+    Returns a list of messages about available slots."""
     available = []
     for label, url in URLS.items():
         try:
@@ -39,7 +45,8 @@ def check_slots():
             soup = BeautifulSoup(response.text, 'html.parser')
             page_text = soup.get_text().lower()
             logging.info(f"Checked: {label}")
-            if NO_APPOINTMENTS_TEXT not in page_text:
+            # Check that none of the 'no appointments' phrases are present
+            if not any(phrase in page_text for phrase in NO_APPOINTMENTS_TEXTS):
                 logging.info(f"Available slot detected for: {label}")
                 available.append(f"<b>{label}</b>: Possible free slot!\n{url}")
             else:
@@ -49,6 +56,7 @@ def check_slots():
     return available
 
 async def main():
+    """Main async loop: periodically checks for available appointments and sends notifications."""
     seen = set()
     while True:
         try:
@@ -57,6 +65,7 @@ async def main():
                 if message not in seen:
                     await bot.send_message(chat_id=CHAT_ID, text=message, parse_mode=ParseMode.HTML)
                     seen.add(message)
+            # Sleep for 5 minutes before next check
             await asyncio.sleep(300)
         except Exception as e:
             logging.exception("Error in main loop")
@@ -66,3 +75,4 @@ async def main():
 if __name__ == "__main__":
     keep_alive()
     asyncio.run(main())
+
