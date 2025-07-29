@@ -29,7 +29,7 @@ HEADERS = {
 }
 
 # Text indicating no appointments
-NO_APPOINTMENTS_TEXT = "no appointments avaialable"  # preserve typo
+NO_APPOINTMENTS_TEXT = "Пожалуйста, выберите дату, чтобы увидеть доступное время."  # preserve typo
 
 def check_slots():
     available = []
