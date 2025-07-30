@@ -14,7 +14,7 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s %(levelname)s [%(threadName)s] %(message)s',
     stream=sys.stdout,
-    force=True  # гарантирует сброс старой конфигурации
+    force=True  
 )
 
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
