@@ -8,8 +8,14 @@ from telegram import Bot
 from telegram.constants import ParseMode
 import time
 import datetime
+import sys
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s %(levelname)s [%(threadName)s] %(message)s',
+    stream=sys.stdout,
+    force=True  # гарантирует сброс старой конфигурации
+)
 
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
@@ -35,7 +41,7 @@ def check_slots():
             response = requests.get(url, headers=HEADERS)
             soup = BeautifulSoup(response.text, 'html.parser')
             page_text = soup.get_text().lower()
-            logging.info(f"[{datetime.datetime.now()}] Checked: {label}")
+            logging.info(f"Checked: {label}")
             if not any(phrase in page_text for phrase in NO_APPOINTMENTS_TEXTS):
                 logging.info(f"Available slot detected for: {label}")
                 available.append(f"<b>{label}</b>: Possible free slot!\n{url}")
@@ -66,7 +72,7 @@ def background_loop():
 
 app = Flask(__name__)
 
-@app.route('/')
+@app.route('/', methods=['GET', 'HEAD'])
 def home():
     return "Bot is running!"
 
