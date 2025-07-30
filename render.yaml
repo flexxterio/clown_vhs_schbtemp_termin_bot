@@ -1,5 +1,5 @@
 services:
-  - type: worker
+  - type: web
     name: clown-termin-bot
     env: python
     plan: free
@@ -12,6 +12,7 @@ services:
         sync: false
       - key: CHAT_ID
         sync: false
+
 
 
 
