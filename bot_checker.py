@@ -5,7 +5,7 @@ import os
 import logging
 from telegram import Bot
 from telegram.constants import ParseMode
-from keep_alive import keep_alive
+import datetime
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -44,7 +44,7 @@ def check_slots():
             response = requests.get(url, headers=HEADERS)
             soup = BeautifulSoup(response.text, 'html.parser')
             page_text = soup.get_text().lower()
-            logging.info(f"Checked: {label}")
+            logging.info(f"[{datetime.datetime.now()}] Checked: {label}")
             # Check that none of the 'no appointments' phrases are present
             if not any(phrase in page_text for phrase in NO_APPOINTMENTS_TEXTS):
                 logging.info(f"Available slot detected for: {label}")
@@ -60,12 +60,12 @@ async def main():
     seen = set()
     while True:
         try:
+            logging.info(f"Bot loop is alive at {datetime.datetime.now()}")
             results = check_slots()
             for message in results:
                 if message not in seen:
                     await bot.send_message(chat_id=CHAT_ID, text=message, parse_mode=ParseMode.HTML)
                     seen.add(message)
-            # Sleep for 5 minutes before next check
             await asyncio.sleep(300)
         except Exception as e:
             logging.exception("Error in main loop")
@@ -73,6 +73,6 @@ async def main():
             await asyncio.sleep(300)
 
 if __name__ == "__main__":
-    keep_alive()
     asyncio.run(main())
+)
 
